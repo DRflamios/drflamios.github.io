@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>drflamios.github.io</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+        background-color: #1a202c;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen">
+  <div class="bg-gray-900 p-4 sm:p-8 m-0 rounded-lg shadow-lg w-full sm:w-96 max-w-screen-md">
+
+    <!-- Textarea for input -->
+    <div>
+      <label class="block text-white mb-2">Input :</label>
+      <textarea id="message" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" rows="4"></textarea>
+    </div>
+
+    <!-- Key input -->
+    <div>
+      <label class="block text-white mb-2">Key :</label>
+      <input type="text" id="key" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" maxlength="18">
+    </div>
+
+    <div class="space-y-0">
+      <!-- Generate Key button -->
+      <div>
+        <button onclick="generateKey()" class="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
+          Generate a key
+        </button>
+      </div>
+
+      <!-- Encode button -->
+      <div>
+        <button onclick="encrypt()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
+          Encode
+        </button>
+      </div>
+
+      <!-- Decode button -->
+      <div>
+        <button onclick="decrypt()" class="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
+          Decode
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-white mt-4">Output :</p>
+
+      <!-- Result Textarea -->
+      <textarea id="result" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" rows="4"></textarea>
+    </div>
+  </div>
+
+  <script>
+    let cryptoKey = null;
+
+    async function generateKey() {
+      const key = generateRandomNumberString(18);
+      document.getElementById('key').value = key;
+      cryptoKey = key;
+    }
+
+    function generateRandomNumberString(length) {
+      let result = '';
+      const characters = '0123456789';
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        result += characters.charAt(randomIndex);
+      }
+      return result;
+    }
+
+    async function encrypt() {
+      const message = document.getElementById('message').value;
+      const key = document.getElementById('key').value;
+
+      if (key.length !== 18 || !/^\d+$/.test(key)) {
+        alert('La clé doit contenir 18 chiffres.');
+        return;
+      }
+
+      let encryptedMessage = '';
+      for (let i = 0; i < message.length; i++) {
+        const charCode = message.charCodeAt(i);
+        const keyChar = key.charCodeAt(i % key.length);
+        const encryptedChar = charCode + keyChar;
+        encryptedMessage += String.fromCharCode(encryptedChar);
+      }
+
+      document.getElementById('result').value = encryptedMessage;
+    }
+
+    async function decrypt() {
+      const encryptedMessage = document.getElementById('message').value;
+      const key = document.getElementById('key').value;
+
+      if (key.length !== 18 || !/^\d+$/.test(key)) {
+        alert('La clé doit contenir 18 chiffres.');
+        return;
+      }
+
+      let decryptedMessage = '';
+      for (let i = 0; i < encryptedMessage.length; i++) {
+        const charCode = encryptedMessage.charCodeAt(i);
+        const keyChar = key.charCodeAt(i % key.length);
+        const decryptedChar = charCode - keyChar;
+        decryptedMessage += String.fromCharCode(decryptedChar);
+      }
+
+      document.getElementById('result').value = decryptedMessage;
+    }
+  </script>
+</body>
+</html>
