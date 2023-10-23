@@ -1,5 +1,5 @@
 # drflamios.github.io
 
-This is just a simple encoding/decoding.
+This is just a simple encoding/decoding system.
 
-THIS HASH IS (maybe) NOT SECURE, DO NOT USE IT !
+THIS PROJECT IS (maybe) NOT SECURE, DO NOT USE IT !
