@@ -1,120 +1,68 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>drflamios.github.io</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-        background-color: #1a202c;
-    }
-  </style>
-</head>
-<body class="flex flex-col items-center justify-center min-h-screen">
-  <div class="bg-gray-900 p-4 sm:p-8 m-0 rounded-lg shadow-lg w-full sm:w-96 max-w-screen-md">
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="icon" href="./favicon.png">
+      <title>DRflamios GitHub Pages</title>
+      <link rel="stylesheet" href="./style.css">
+      <script src="./jquery-3.7.1.min.js"></script>
+  </head>
+  <body class="bg-gray-900 min-h-screen">
+      <main class="max-w-6xl h-screen mx-auto px-4 items-center flex justify-center">
+          <div id="loading-state" class="flex justify-center items-center py-12" style="display: none;">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          </div>
+          <div id="error-state" class="bg-red-500 text-white p-4 rounded-lg mb-8" style="display: none;"></div>
 
-    <!-- Textarea for input -->
-    <div>
-      <label class="block text-white mb-2">Input :</label>
-      <textarea id="message" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" rows="4"></textarea>
-    </div>
+          <div id="content" style="display: none;">
 
-    <!-- Key input -->
-    <div>
-      <label class="block text-white mb-2">Key :</label>
-      <input type="text" id="key" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" maxlength="18">
-    </div>
+              <div class="bg-gray-800 p-6 rounded-lg mb-8">
+                  <div class="flex items-center gap-6">
+                      <img id="user-avatar" class="w-24 h-24 rounded-full" src="">
+                      <div>
+                          <h2 id="user-name" class="text-2xl font-bold text-white"></h2>
+                          <p id="user-login" class="text-gray-400"></p>
+                          <p id="user-bio" class="mt-2 text-white"></p>
+                      </div>
+                  </div>
+                  <div class="grid grid-cols-2 gap-4 mt-6">
+                      <template id="user-location" style="display: none;">
+                          <div class="flex items-center gap-2 text-white">
+                              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                              </svg>
+                              <span id="location-text"></span>
+                          </div>
+                      </template>
+                  </div>
+              </div>
 
-    <div class="space-y-0">
-      <!-- Generate Key button -->
-      <div>
-        <button onclick="generateKey()" class="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
-          Generate a key
-        </button>
-      </div>
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                  <div class="bg-gray-800 p-4 rounded-lg">
+                      <p class="text-sm text-gray-400">Repositories</p>
+                      <p id="user-repos" class="text-2xl font-bold text-white"></p>
+                  </div>
+                  <div class="bg-gray-800 p-4 rounded-lg">
+                      <p class="text-sm text-gray-400">Followers</p>
+                      <p id="user-followers" class="text-2xl font-bold text-white"></p>
+                  </div>
+                  <div class="bg-gray-800 p-4 rounded-lg">
+                      <p class="text-sm text-gray-400">Following</p>
+                      <p id="user-following" class="text-2xl font-bold text-white"></p>
+                  </div>
+                  <div class="bg-gray-800 p-4 rounded-lg">
+                      <p class="text-sm text-gray-400">Member Since</p>
+                      <p id="user-created-at" class="text-2xl font-bold text-white"></p>
+                  </div>
+              </div>
 
-      <!-- Encode button -->
-      <div>
-        <button onclick="encrypt()" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
-          Encode
-        </button>
-      </div>
-
-      <!-- Decode button -->
-      <div>
-        <button onclick="decrypt()" class="mt-4 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg cursor-pointer w-full">
-          Decode
-        </button>
-      </div>
-    </div>
-
-    <div>
-      <p class="text-white mt-4">Output :</p>
-
-      <!-- Result Textarea -->
-      <textarea id="result" class="w-full px-3 py-2 rounded-lg text-gray-900 bg-gray-100" rows="4"></textarea>
-    </div>
-  </div>
-
-  <script>
-    let cryptoKey = null;
-
-    async function generateKey() {
-      const key = generateRandomNumberString(18);
-      document.getElementById('key').value = key;
-      cryptoKey = key;
-    }
-
-    function generateRandomNumberString(length) {
-      let result = '';
-      const characters = '0123456789';
-      for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        result += characters.charAt(randomIndex);
-      }
-      return result;
-    }
-
-    async function encrypt() {
-      const message = document.getElementById('message').value;
-      const key = document.getElementById('key').value;
-
-      if (key.length !== 18 || !/^\d+$/.test(key)) {
-        alert('La clé doit contenir 18 chiffres.');
-        return;
-      }
-
-      let encryptedMessage = '';
-      for (let i = 0; i < message.length; i++) {
-        const charCode = message.charCodeAt(i);
-        const keyChar = key.charCodeAt(i % key.length);
-        const encryptedChar = charCode + keyChar;
-        encryptedMessage += String.fromCharCode(encryptedChar);
-      }
-
-      document.getElementById('result').value = encryptedMessage;
-    }
-
-    async function decrypt() {
-      const encryptedMessage = document.getElementById('message').value;
-      const key = document.getElementById('key').value;
-
-      if (key.length !== 18 || !/^\d+$/.test(key)) {
-        alert('La clé doit contenir 18 chiffres.');
-        return;
-      }
-
-      let decryptedMessage = '';
-      for (let i = 0; i < encryptedMessage.length; i++) {
-        const charCode = encryptedMessage.charCodeAt(i);
-        const keyChar = key.charCodeAt(i % key.length);
-        const decryptedChar = charCode - keyChar;
-        decryptedMessage += String.fromCharCode(decryptedChar);
-      }
-
-      document.getElementById('result').value = decryptedMessage;
-    }
-  </script>
-</body>
+              <div>
+                  <h2 class="text-2xl font-bold text-white mb-4">Top Repositories</h2>
+                  <div id="top-repos" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+              </div>
+          </div>
+      </main>
+      <script src="./script.js"></script>
+  </body>
 </html>
